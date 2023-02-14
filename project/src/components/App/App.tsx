@@ -6,13 +6,17 @@ import ProfilePage from '../../pages/Profile/ProfilePage';
 import {HelmetProvider} from 'react-helmet-async';
 import LoginPage from '../../pages/Login/LoginPage';
 import NotFoundPage from '../../pages/NotFound/NotFoundPage';
-import {useAppSelector} from '../../hooks';
+import {useAppDispatch, useAppSelector} from '../../hooks';
 import HistoryRouter from '../history-route/history-route';
 import browserHistory from '../../browser-history';
+import {filterOrders} from '../../store/actions';
 
 
 function App() {
+  const orders = useAppSelector(state => state.orders);
+  const dispatch = useAppDispatch();
   const authorizationStatus = useAppSelector((state) => state.authorizationStatus);
+  dispatch(filterOrders(orders.filter((order) => order.status !== 'Выполнена')));
 
   return (
     <HelmetProvider>

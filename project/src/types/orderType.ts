@@ -1,6 +1,6 @@
 import {FacadesType} from './facades';
 
-export type Order = {
+export type OrderType = {
   number: string,
   date: Date,
   agent: string,
@@ -11,4 +11,4 @@ export type Order = {
   facades?: FacadesType,
 }
 
-export type Orders = Order[];
+export type OrdersType = OrderType[];

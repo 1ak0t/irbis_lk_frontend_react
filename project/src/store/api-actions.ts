@@ -1,17 +1,17 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {AppDispatch, State} from '../types/state';
 import {AxiosInstance} from 'axios';
-import {Orders} from '../types/order';
+import {OrdersType} from '../types/orderType';
 import {APIRoutes, AppRoute, AuthorizationStatus} from '../const';
 import {
   loadFacades,
   loadOrders, orderToLoadingFacadesAction,
   redirectToRoute,
-  requireAuthorization,
+  requireAuthorization, setCheckEmailStatus,
   setFacadesLoadingStatus,
-  setOrdersLoadingStatus,
+  setOrdersLoadingStatus, setOrganizationName,
 } from './actions';
-import {AuthData, UserData} from '../types/api';
+import {AuthData, CheckData, UserData} from '../types/api';
 import {dropToken, saveToken} from '../services/token';
 import {FacadesType} from '../types/facades';
 
@@ -23,7 +23,7 @@ export const fetchOrdersAction = createAsyncThunk<void, undefined, {
   'orders/fetchOrders',
   async (_arg, {dispatch, extra: api}) => {
     dispatch(setOrdersLoadingStatus(true));
-    const {data} = await api.get<Orders>(APIRoutes.Orders);
+    const {data} = await api.get<OrdersType>(APIRoutes.Orders);
     dispatch(setOrdersLoadingStatus(false));
     dispatch(loadOrders(data));
   },
@@ -52,9 +52,10 @@ export const loginAction = createAsyncThunk<void, AuthData, {
 }>(
   'users/login',
   async ({login: email, password}, {dispatch, extra: api}) => {
-    const {data: {token}} = await api.post<UserData>(APIRoutes.Login, {email, password});
+    const {data: {token, name}} = await api.post<UserData>(APIRoutes.Login, {email, password});
     saveToken(token);
     dispatch(requireAuthorization(AuthorizationStatus.Auth));
+    dispatch(setOrganizationName(name));
     dispatch(fetchOrdersAction());
     dispatch(redirectToRoute(AppRoute.Profile));
   },
@@ -69,7 +70,21 @@ export const logoutAction = createAsyncThunk<void, undefined, {
   async (_arg, {dispatch, extra: api}) => {
     dropToken();
     dispatch(requireAuthorization(AuthorizationStatus.NoAuth));
+    dispatch(setOrganizationName(''));
+    dispatch(setCheckEmailStatus(false));
     dispatch(redirectToRoute(AppRoute.Login));
+  },
+);
+
+export const checkEmailAction = createAsyncThunk<void, CheckData, {
+  dispatch: AppDispatch;
+  state: State;
+  extra: AxiosInstance;
+}>(
+  'users/checkEmail',
+  async ({email}, {dispatch, extra: api}) => {
+    //const {data} = await api.post<CheckData>(APIRoutes.Login, {email});
+    dispatch(setCheckEmailStatus(true));
   },
 );
 

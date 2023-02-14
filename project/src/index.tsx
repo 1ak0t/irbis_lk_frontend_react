@@ -5,7 +5,7 @@ import App from './components/App/App';
 import {Provider} from 'react-redux';
 import {store} from './store';
 import {getToken} from './services/token';
-import {requireAuthorization} from './store/actions';
+import {filterOrders, requireAuthorization} from './store/actions';
 import {AuthorizationStatus} from './const';
 
 if (getToken() !== '') {

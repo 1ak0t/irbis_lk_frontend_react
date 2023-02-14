@@ -1,18 +1,22 @@
 import {createReducer} from '@reduxjs/toolkit';
 import {
+  filterOrders,
   loadFacades,
   loadOrders, orderToLoadingFacadesAction,
-  requireAuthorization,
+  requireAuthorization, setCheckEmailStatus,
   setError,
   setFacadesLoadingStatus,
-  setOrdersLoadingStatus,
+  setOrdersLoadingStatus, setOrganizationName,
 } from './actions';
-import {Orders} from '../types/order';
+import {OrdersType} from '../types/orderType';
 import {AuthorizationStatus} from '../const';
 
 type InitialState = {
-  orders: Orders;
+  organization: string,
+  orders: OrdersType;
+  filteredOrders: OrdersType;
   authorizationStatus: AuthorizationStatus;
+  checkEmailStatus: boolean;
   error: string | null;
   isOrdersLoading: boolean;
   isFacadesLoading: boolean;
@@ -20,8 +24,11 @@ type InitialState = {
 }
 
 const initialState: InitialState = {
+  organization: '',
   orders: [],
+  filteredOrders: [],
   authorizationStatus: AuthorizationStatus.Unknown,
+  checkEmailStatus: false,
   error: null,
   isOrdersLoading: false,
   isFacadesLoading: false,
@@ -33,17 +40,26 @@ const reducer = createReducer(initialState, (builder) => {
     .addCase(loadOrders, (state, action) => {
       state.orders = action.payload;
     })
+    .addCase(filterOrders, (state, action) => {
+      state.filteredOrders = action.payload;
+    })
     .addCase(loadFacades, (state, action) => {
-      const orderToLoad = state.orders.find((order) => order.number === state.orderToLoadingFacades);
+      const orderToLoad = state.filteredOrders.find((order) => order.number === state.orderToLoadingFacades);
       if (orderToLoad) {
         orderToLoad.facades = action.payload;
       }
+    })
+    .addCase(setOrganizationName, (state, action) => {
+      state.organization = action.payload;
     })
     .addCase(orderToLoadingFacadesAction, (state, action) => {
       state.orderToLoadingFacades = action.payload;
     })
     .addCase(requireAuthorization, (state, action) => {
       state.authorizationStatus = action.payload;
+    })
+    .addCase(setCheckEmailStatus, (state, action) => {
+      state.checkEmailStatus = action.payload;
     })
     .addCase(setError, (state, action) => {
       state.error = action.payload;

@@ -1,15 +1,21 @@
 import {createAction} from '@reduxjs/toolkit';
-import {Orders} from '../types/order';
+import {OrdersType} from '../types/orderType';
 import {AppRoute, AuthorizationStatus} from '../const';
 import {FacadesType} from '../types/facades';
 
-export const loadOrders = createAction<Orders>('orders/loadOrders');
+export const loadOrders = createAction<OrdersType>('orders/loadOrders');
+
+export const filterOrders = createAction<OrdersType>('orders/filterOrders');
 
 export const loadFacades = createAction<FacadesType>('facades/loadFacades');
 
 export const orderToLoadingFacadesAction = createAction<string | null>('facades/orderToLoadingFacades');
 
 export const requireAuthorization = createAction<AuthorizationStatus>('user/requireAuthorization');
+
+export const setCheckEmailStatus = createAction<boolean>('user/setCheckEmailStatus');
+
+export const setOrganizationName = createAction<string>('user/setOrganizationName');
 
 export const setError = createAction<string | null>('error');
 

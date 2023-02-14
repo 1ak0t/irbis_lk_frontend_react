@@ -1,12 +1,16 @@
 import {Container, Form, Row, Button} from 'react-bootstrap';
 import React, {FormEvent, useRef} from 'react';
-import {useAppDispatch} from '../../hooks';
+import {useAppDispatch, useAppSelector} from '../../hooks';
 import {AuthData} from '../../types/api';
 import {loginAction} from '../../store/api-actions';
+import {setCheckEmailStatus} from '../../store/actions';
 
 function LoginForm() {
   const loginRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
+  const emailBlockRef = useRef<HTMLDivElement | null>(null);
+  const passwordBlockRef = useRef<HTMLDivElement | null>(null);
+  const checkEmailStatus = useAppSelector(state => state.checkEmailStatus);
 
   const dispatch = useAppDispatch();
 
@@ -25,21 +29,42 @@ function LoginForm() {
     }
   }
 
+  const loginChangeBlock = (checkEmailStatus: boolean) => {
+    if (checkEmailStatus) {
+      if (passwordBlockRef.current && emailBlockRef.current) {
+        passwordBlockRef.current.style.display = "block";
+        emailBlockRef.current.style.display = "none";
+      }
+    }
+  }
+
+  const checkEmailHandle = (checkEmailStatus: boolean) => {
+    dispatch(setCheckEmailStatus(true));
+    loginChangeBlock(checkEmailStatus);
+  }
+
   return (
     <Container className="container-sm mt-5">
       <Row className="col-4 mx-auto">
         <Form onSubmit={handleLoginFormSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Адрес электронной почты</Form.Label>
-            <Form.Control ref={loginRef} type="email" placeholder="Введите адрес" />
-          </Form.Group>
-          <Form.Group className="mb-4">
-            <Form.Label>Пароль</Form.Label>
-            <Form.Control ref={passwordRef} type="password" placeholder="Введите пароль" />
-          </Form.Group>
-          <Button className="w-100" variant="primary" type="submit">
-            Вход
-          </Button>
+          <div ref={emailBlockRef}>
+            <Form.Group className="mb-3">
+              <Form.Label>Адрес электронной почты</Form.Label>
+              <Form.Control ref={loginRef} type="email" placeholder="Введите адрес" />
+            </Form.Group>
+            <Button className="w-100" variant="primary" type="button" onClick={() => checkEmailHandle(checkEmailStatus)}>
+              Далее
+            </Button>
+          </div>
+          <div ref={passwordBlockRef} style={{"display" : "none"}}>
+            <Form.Group className="mb-4">
+              <Form.Label>Пароль</Form.Label>
+              <Form.Control ref={passwordRef} type="password" placeholder="Введите пароль" />
+            </Form.Group>
+            <Button className="w-100" variant="primary" type="submit">
+              Вход
+            </Button>
+          </div>
         </Form>
       </Row>
     </Container>
