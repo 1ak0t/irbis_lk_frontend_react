@@ -3,7 +3,7 @@ import {
   filterOrders,
   loadFacades,
   loadOrders, orderToLoadingFacadesAction,
-  requireAuthorization, setCheckEmailStatus,
+  requireAuthorization, setCheckEmailStatus, setEmail,
   setError,
   setFacadesLoadingStatus,
   setOrdersLoadingStatus, setOrganizationName,
@@ -13,6 +13,7 @@ import {AuthorizationStatus} from '../const';
 
 type InitialState = {
   organization: string,
+  email: string;
   orders: OrdersType;
   filteredOrders: OrdersType;
   authorizationStatus: AuthorizationStatus;
@@ -25,6 +26,7 @@ type InitialState = {
 
 const initialState: InitialState = {
   organization: '',
+  email: '',
   orders: [],
   filteredOrders: [],
   authorizationStatus: AuthorizationStatus.Unknown,
@@ -51,6 +53,9 @@ const reducer = createReducer(initialState, (builder) => {
     })
     .addCase(setOrganizationName, (state, action) => {
       state.organization = action.payload;
+    })
+    .addCase(setEmail, (state, action) => {
+      state.email = action.payload;
     })
     .addCase(orderToLoadingFacadesAction, (state, action) => {
       state.orderToLoadingFacades = action.payload;

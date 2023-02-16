@@ -2,8 +2,7 @@ import {Container, Form, Row, Button} from 'react-bootstrap';
 import React, {FormEvent, useRef} from 'react';
 import {useAppDispatch, useAppSelector} from '../../hooks';
 import {AuthData} from '../../types/api';
-import {loginAction} from '../../store/api-actions';
-import {setCheckEmailStatus} from '../../store/actions';
+import {checkEmailAction, loginAction} from '../../store/api-actions';
 
 function LoginForm() {
   const loginRef = useRef<HTMLInputElement | null>(null);
@@ -11,6 +10,7 @@ function LoginForm() {
   const emailBlockRef = useRef<HTMLDivElement | null>(null);
   const passwordBlockRef = useRef<HTMLDivElement | null>(null);
   const checkEmailStatus = useAppSelector(state => state.checkEmailStatus);
+  const userName = useAppSelector(state => state.organization);
 
   const dispatch = useAppDispatch();
 
@@ -39,9 +39,13 @@ function LoginForm() {
   }
 
   const checkEmailHandle = (checkEmailStatus: boolean) => {
-    dispatch(setCheckEmailStatus(true));
-    loginChangeBlock(checkEmailStatus);
+    if (loginRef.current) {
+      const email: string = loginRef.current.value;
+      dispatch(checkEmailAction({email: email}))
+    }
   }
+
+  loginChangeBlock(checkEmailStatus);
 
   return (
     <Container className="container-sm mt-5">
@@ -58,7 +62,7 @@ function LoginForm() {
           </div>
           <div ref={passwordBlockRef} style={{"display" : "none"}}>
             <Form.Group className="mb-4">
-              <Form.Label>Пароль</Form.Label>
+              <Form.Label>{userName}</Form.Label>
               <Form.Control ref={passwordRef} type="password" placeholder="Введите пароль" />
             </Form.Group>
             <Button className="w-100" variant="primary" type="submit">

@@ -1,7 +1,8 @@
 import {Button, Container, Navbar} from 'react-bootstrap';
 import {useAppDispatch, useAppSelector} from '../../hooks';
-import {AuthorizationStatus} from '../../const';
+import {AppRoute, AuthorizationStatus} from '../../const';
 import {logoutAction} from '../../store/api-actions';
+import {Link} from 'react-router-dom';
 
 function Header() {
   const authStatus = useAppSelector(state => state.authorizationStatus);
@@ -18,7 +19,7 @@ function Header() {
   return (
     <Navbar bg="secondary">
       <Container>
-        <Navbar.Brand className="text-white">ФМФ "Ирбис"</Navbar.Brand>
+        <Navbar.Brand className="text-white"><Link to={AppRoute.Profile} style={{"color" : "white"}}>ФМФ "Ирбис"</Link></Navbar.Brand>
         <h2 style={{"color": "white"}}>{organizationName}</h2>
         {loginButton(authStatus)}
       </Container>

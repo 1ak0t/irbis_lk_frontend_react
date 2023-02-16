@@ -2,14 +2,17 @@ import {createAsyncThunk} from '@reduxjs/toolkit';
 import {AppDispatch, State} from '../types/state';
 import {AxiosInstance} from 'axios';
 import {OrdersType} from '../types/orderType';
-import {APIRoutes, AppRoute, AuthorizationStatus} from '../const';
+import {APIRoutes, AppRoute, AuthorizationStatus, StatusCodes} from '../const';
 import {
   loadFacades,
-  loadOrders, orderToLoadingFacadesAction,
+  loadOrders,
+  orderToLoadingFacadesAction,
   redirectToRoute,
-  requireAuthorization, setCheckEmailStatus,
+  requireAuthorization,
+  setCheckEmailStatus, setEmail,
   setFacadesLoadingStatus,
-  setOrdersLoadingStatus, setOrganizationName,
+  setOrdersLoadingStatus,
+  setOrganizationName,
 } from './actions';
 import {AuthData, CheckData, UserData} from '../types/api';
 import {dropToken, saveToken} from '../services/token';
@@ -83,10 +86,28 @@ export const checkEmailAction = createAsyncThunk<void, CheckData, {
 }>(
   'users/checkEmail',
   async ({email}, {dispatch, extra: api}) => {
-    //const {data} = await api.post<CheckData>(APIRoutes.Login, {email});
-    dispatch(setCheckEmailStatus(true));
-  },
-);
+    let statusCode = 0;
+    let userName = '';
+    let userEmail = '';
+    await api.post<UserData>(APIRoutes.CheckEmail, {email})
+      .then((res) => {
+        statusCode = res.status;
+        userName = res.data.name;
+        userEmail = res.data.email;
+      }).catch(() => dispatch(redirectToRoute(AppRoute.NoEmail)));
+
+    switch (statusCode) {
+      case StatusCodes.Ok:
+        dispatch(setOrganizationName(userName));
+        dispatch(setCheckEmailStatus(true));
+        break;
+      case StatusCodes.GetFrom1C:
+        dispatch(setOrganizationName(userName));
+        dispatch(setEmail(userEmail));
+        dispatch(redirectToRoute(AppRoute.ConfirmEmail));
+        break;
+    }
+  });
 
 export const fetchFacadesAction = createAsyncThunk<void, string, {
   dispatch: AppDispatch;

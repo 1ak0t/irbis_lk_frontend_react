@@ -17,6 +17,8 @@ export const setCheckEmailStatus = createAction<boolean>('user/setCheckEmailStat
 
 export const setOrganizationName = createAction<string>('user/setOrganizationName');
 
+export const setEmail = createAction<string>('user/setEmail');
+
 export const setError = createAction<string | null>('error');
 
 export const setOrdersLoadingStatus = createAction<boolean>('orders/setOrdersLoadingStatus');
